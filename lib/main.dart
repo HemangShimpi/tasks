@@ -4,6 +4,13 @@ void main() {
   runApp(TaskManagerApp());
 }
 
+class Task {
+  String name;
+  bool isCompleted;
+
+  Task({required this.name, this.isCompleted = false});
+}
+
 class TaskListScreen extends StatefulWidget {
   const TaskListScreen({super.key});
 
@@ -12,11 +19,51 @@ class TaskListScreen extends StatefulWidget {
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
+  final List<Task> _tasks = [];
+  final TextEditingController _controller = TextEditingController();
+
+  void _addTask() {
+    if (_controller.text.isNotEmpty) {
+      setState(() {
+        _tasks.add(Task(name: _controller.text));
+        _controller.clear();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Task Manager')),
-      body: Center(child: Text('Task list goes here')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(labelText: 'Enter task'),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: _addTask,
+                  child: Text('Add'),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _tasks.length,
+              itemBuilder: (context, index) {
+                return ListTile(title: Text(_tasks[index].name));
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
